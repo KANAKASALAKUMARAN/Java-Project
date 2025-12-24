@@ -1,0 +1,104 @@
+import java.util.*;
+//for assign the nodes
+class Node{
+	String address;
+	Node next;
+	Node back;
+	Node(String address,Node next,Node back){
+		this.address=address;
+		this.next=next;
+		this.back=back;
+	}
+	Node(String address){
+		this.address=address;
+		this.next=null;
+		this.back=null;
+	}
+}
+
+//for node operation purposes
+class BrowserLL {
+	Node current;
+	BrowserLL(String homepage) {
+		Node head=new Node(homepage);
+		current=head;
+	}
+	void otherlinks(String addlinks) {
+		Node newnode=new Node(addlinks);
+		current.next=newnode;
+		newnode.back=current;
+		current=newnode;
+		System.out.println("Current address:" + current.address);
+	}
+	String moveback(int steps) {
+		while(current.back!=null && steps>0) {
+			current=current.back;
+			steps--;
+		}
+		return current.address;
+	}
+	String moveforward(int steps) {
+		while(current.next!=null && steps>0) {
+			current=current.next;
+			steps--;
+		}
+		return current.address;		
+	}
+
+}
+//main block
+public class MainClass{
+	public static void main(String[] args) {
+		Scanner sc=new Scanner(System.in);
+		BrowserLL b=null;
+		while(true) {
+			System.out.println("Select the action to be performed: \n Press 1 to add the homepage link \n "
+					+ "Press 2 to add the other links continuous to the browser \n "
+					+ "Press 3 to go to the backward in a valid available times \n"
+					+ "Press 4 to go forward in a valid available times \n"
+					+ "Press 5 to terminate the process");
+			int choice=sc.nextInt();
+			sc.nextLine();
+			switch(choice) {
+			case 1:
+				System.out.println("Enter homepage link");
+				String homepage=sc.nextLine();
+				b=new BrowserLL(homepage);
+				System.out.println(b.current.address);
+				break;
+			case 2:
+				if(b==null) {
+				System.out.println("Give the information of the home pagefirst");
+				break;
+				}
+				System.out.println("Enter website link");
+				String link=sc.nextLine();
+				b.otherlinks(link);
+				break;
+			case 3:
+				if(b==null) {
+					System.out.println("Give the information of the home pagefirst");
+					break;
+				}
+				System.out.println("Enter number of times to go backward");
+				int backwardsteps=sc.nextInt();
+				System.out.println("Current address:" + b.moveback(backwardsteps));
+				break;
+			case 4:
+				if(b==null) {
+					System.out.println("Give the information of the home pagefirst");
+					break;
+				}
+				System.out.println("Enter number of times to go forward");
+				int forwardsteps=sc.nextInt();
+				System.out.println("Current address:"+ b.moveforward(forwardsteps));
+				break;
+			case 5:
+				System.out.println("Exiting...");
+				return;
+			default:
+				System.out.println("Enter 1 to 5");		
+			}
+		}
+	}
+}

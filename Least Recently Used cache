@@ -1,0 +1,90 @@
+import java.util.HashMap;
+import java.util.Map;
+
+class Node {
+    int key;
+    int value;
+    Node next;
+    Node prev;
+
+    Node(int key, int value) {
+        this.key = key;
+        this.value = value;
+        this.next = null;
+        this.prev = null;
+    }
+}
+
+class LRUCache {
+
+    Node head = new Node(-1, -1);   // Dummy head
+    Node tail = new Node(-1, -1);   // Dummy tail
+
+    int capacity;
+    Map<Integer, Node> cacheMap = new HashMap<>();
+
+    public LRUCache(int capacity) {
+        this.capacity = capacity;
+        head.next = tail;
+        tail.prev = head;
+    }
+
+    // Remove a node from doubly linked list
+    private void removeNode(Node node) {
+        node.prev.next = node.next;
+        node.next.prev = node.prev;
+    }
+
+    // Add node right after head (Most Recently Used)
+    private void addToFront(Node node) {
+        Node firstNode = head.next;
+        head.next = node;
+        node.prev = head;
+        node.next = firstNode;
+        firstNode.prev = node;
+    }
+
+    public int get(int key) {
+        if (!cacheMap.containsKey(key))
+            return -1;
+
+        Node node = cacheMap.get(key);
+        removeNode(node);
+        addToFront(node);
+        return node.value;
+    }
+
+    public void put(int key, int value) {
+        if (cacheMap.containsKey(key)) {
+            Node node = cacheMap.get(key);
+            node.value = value;
+            removeNode(node);
+            addToFront(node);
+        } else {
+            if (cacheMap.size() == capacity) {
+                Node leastRecentlyUsed = tail.prev;
+                removeNode(leastRecentlyUsed);
+                cacheMap.remove(leastRecentlyUsed.key);
+            }
+            Node newNode = new Node(key, value);
+            addToFront(newNode);
+            cacheMap.put(key, newNode);
+        }
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+
+        LRUCache cache = new LRUCache(3);
+        cache.put(1, 10);
+        cache.put(2, 20);
+        System.out.println(cache.get(1)); // 10
+        cache.put(3, 30); 
+        System.out.println(cache.get(2)); // 20
+        cache.put(4, 40);
+        System.out.println(cache.get(1)); // -1
+        System.out.println(cache.get(3)); // 30
+        System.out.println(cache.get(4)); // 40
+    }
+}
